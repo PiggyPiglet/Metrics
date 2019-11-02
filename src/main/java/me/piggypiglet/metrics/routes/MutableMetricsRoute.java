@@ -1,5 +1,7 @@
 package me.piggypiglet.metrics.routes;
 
+import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 import me.piggypiglet.framework.http.responses.routes.mixins.Authenticated;
 import me.piggypiglet.framework.http.responses.routes.mixins.json.manager.Removable;
 import me.piggypiglet.framework.http.responses.routes.objects.Header;
@@ -8,10 +10,11 @@ import me.piggypiglet.metrics.managers.MetricsManager;
 import me.piggypiglet.metrics.objects.MetricSet;
 
 import javax.inject.Inject;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 // ------------------------------
@@ -21,6 +24,9 @@ import java.util.stream.Collectors;
 @Authenticated
 @Removable
 public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("ddMMyyyyHHmmssSS");
+    private static final Gson GSON = new Gson();
+
     private final MetricsManager manager;
 
     @Inject
@@ -29,6 +35,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
         this.manager = manager;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     protected Object provide(Map<String, List<String>> params, List<Header> headers) {
         if (params.containsKey("add")) {
@@ -37,10 +44,13 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
 
             if (mapHeaders.containsKey("data")) {
                 if (!manager.exists(name)) {
-                    final Random random = ThreadLocalRandom.current();
+                    manager.add(new MetricSet(
+                            UUID.nameUUIDFromBytes(FORMAT.format(LocalDateTime.now()).getBytes()),
+                            mapHeaders.get("name"),
+                            GSON.fromJson(mapHeaders.get("data"), LinkedTreeMap.class))
+                    );
 
-
-//                   manager.add(new MetricSet());
+                    return true;
                 }
             }
         }
