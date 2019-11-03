@@ -28,7 +28,7 @@ public final class MetricsRoute extends JsonManagerRoute<MetricSet> {
     }
 
     @Override
-    protected Object provide(Map<String, List<String>> map, List<Header> headers) {
+    protected Object provide(Map<String, List<String>> map, List<Header> headers, String ip) {
         return "null";
     }
 }

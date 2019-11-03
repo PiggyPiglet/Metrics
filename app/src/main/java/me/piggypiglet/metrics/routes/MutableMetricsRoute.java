@@ -38,7 +38,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object provide(Map<String, List<String>> params, List<Header> headers) {
+    protected Object provide(Map<String, List<String>> params, List<Header> headers, String ip) {
         if (params.containsKey("update")) {
             final String name = params.get("update").get(0);
             final Map<String, String> mapHeaders = headers.stream().collect(Collectors.toMap(Header::getKey, Header::getValue));
@@ -48,7 +48,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
 
                 if (!manager.exists(name)) {
                     if (canAdd) {
-                        manager.create(mapHeaders.get("name"), requestIp, data);
+                        manager.create(name, ip, data);
                         return true;
                     } else {
                         return "Addition via route is not enabled.";
@@ -63,7 +63,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
                     Stream.of(
                             result.getLiveData(),
                             result.getPersistentData()
-                    ).forEach(m -> m.get(requestIp).putAll(data));
+                    ).forEach(m -> m.get(ip).putAll(data));
 
                     return true;
                 }
