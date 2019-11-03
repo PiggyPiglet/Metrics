@@ -1,13 +1,13 @@
 package me.piggypiglet.metrics.managers;
 
 import com.google.inject.Singleton;
-import me.piggypiglet.framework.managers.implementations.SearchableManager;
 import me.piggypiglet.framework.managers.objects.KeyTypeInfo;
 import me.piggypiglet.framework.mysql.manager.MySQLManager;
-import me.piggypiglet.framework.mysql.table.Table;
 import me.piggypiglet.metrics.objects.MetricSet;
 import me.piggypiglet.metrics.tables.MetricsTable;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Singleton
 public final class MetricsManager extends MySQLManager<MetricSet> {
     private static final MetricSet DEF = new MetricSet(UUID.nameUUIDFromBytes("null".getBytes()), "null", new HashMap<>());
+    private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("ddMMyyyyHHmmssSS");
 
     private final Map<UUID, MetricSet> metrics = new ConcurrentHashMap<>();
 
@@ -40,6 +41,14 @@ public final class MetricsManager extends MySQLManager<MetricSet> {
     @Override
     protected void insert(MetricSet metricSet) {
         metrics.put(metricSet.getId(), metricSet);
+    }
+
+    public void add(String name, Map<String, Object> data) {
+        add(new MetricSet(
+                UUID.nameUUIDFromBytes(FORMAT.format(LocalDateTime.now()).getBytes()),
+                name,
+                data
+        ));
     }
 
     @Override

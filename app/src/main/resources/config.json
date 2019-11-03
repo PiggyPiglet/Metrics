@@ -1,4 +1,7 @@
 {
+  // Whether new metrics can be added to the system via routes. Not to be confused with modification.
+  "addition-via-route": false,
+
   "http": {
     "host": "127.0.0.1",
     "port": 8080, // Keep in mind, any port below 1024 on unix systems will need sudo privilege to run.
@@ -26,7 +29,10 @@
     "db": "application",
     "host": "127.0.0.1",
 
+    // How often data stored in memory will sync to the database
     "save-interval": "10 mins",
+
+    // You shouldn't need to edit this:
     "tables": [
       "data"
     ]

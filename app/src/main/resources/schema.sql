@@ -2,7 +2,7 @@ CREATE TABLE `data` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`uuid` TINYTEXT NULL,
 	`name` TINYTEXT NULL,
-	`data` JSON NULL,
+	`data` LONGTEXT NULL,
 	PRIMARY KEY (`id`)
 )
 COLLATE='utf8_general_ci'

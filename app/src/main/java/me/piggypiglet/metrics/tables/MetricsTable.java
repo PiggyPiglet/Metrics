@@ -26,7 +26,7 @@ public final class MetricsTable extends Table<MetricSet> {
         final Map<String, Object> map = keyValueSet.getMap();
 
         return new MetricSet(
-                UUID.nameUUIDFromBytes(((String) map.get("uuid")).getBytes()),
+                UUID.fromString((String) map.get("uuid")),
                 (String) map.get("name"),
                 GSON.fromJson((String) map.get("data"), LinkedTreeMap.class)
         );
