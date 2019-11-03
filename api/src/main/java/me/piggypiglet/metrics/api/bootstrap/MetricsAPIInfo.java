@@ -1,11 +1,12 @@
 package me.piggypiglet.metrics.api.bootstrap;
 
 import me.piggypiglet.metrics.api.MetricsAPI;
+import me.piggypiglet.metrics.api.tasks.DefaultUploadTask;
 import me.piggypiglet.metrics.api.tasks.UploadTask;
+import me.piggypiglet.metrics.api.utils.BuilderUtils;
 
+import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2019
@@ -16,15 +17,15 @@ public final class MetricsAPIInfo {
     private final String url;
     private final String token;
     private final UploadTask upload;
-    private final ScheduledExecutorService executor;
+    private final ScheduledExecutorService scheduler;
     private final long syncInterval;
 
-    private MetricsAPIInfo(String name, String url, String token, Object upload, Object executor, long syncInterval) {
+    private MetricsAPIInfo(String name, String url, String token, UploadTask upload, ScheduledExecutorService scheduler, long syncInterval) {
         this.name = name;
         this.url = url;
         this.token = token;
-        this.upload = (UploadTask) upload;
-        this.executor = (ScheduledExecutorService) executor;
+        this.upload = upload;
+        this.scheduler = scheduler;
         this.syncInterval = syncInterval;
     }
 
@@ -48,8 +49,8 @@ public final class MetricsAPIInfo {
         return upload;
     }
 
-    public ScheduledExecutorService getExecutor() {
-        return executor;
+    public ScheduledExecutorService getScheduler() {
+        return scheduler;
     }
 
     public long getSyncInterval() {
@@ -64,8 +65,8 @@ public final class MetricsAPIInfo {
         private String name = "d-name";
         private String url = "d-url";
         private String token = "null";
-        private Object upload = "d-upload";
-        private Object executor = "d-executor";
+        private UploadTask upload = new DefaultUploadTask();
+        private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         private long syncInterval = 600000L;
 
         private Builder() {}
@@ -93,8 +94,8 @@ public final class MetricsAPIInfo {
             return this;
         }
 
-        public Builder executor(ScheduledExecutorService executor) {
-            this.executor = executor;
+        public Builder scheduler(ScheduledExecutorService scheduler) {
+            this.scheduler = scheduler;
             return this;
         }
 
@@ -104,17 +105,9 @@ public final class MetricsAPIInfo {
         }
 
         public MetricsAPIInfo build() {
-            String unsetVars = Stream.of(name, url, upload, executor).filter(o -> {
-                try {
-                    return ((String) o).startsWith("d-");
-                } catch (Exception e) {
-                    return false;
-                }
-            }).map(String::valueOf).map(s -> s.replaceFirst("d-", "")).collect(Collectors.joining(", "));
+            BuilderUtils.checkVars("MetricsAPI", name, url);
 
-            if (!unsetVars.isEmpty()) throw new NullPointerException("These required vars weren't set in your MetricsAPI Builder: " + unsetVars);
-
-            return new MetricsAPIInfo(name, url, token, upload, executor, syncInterval);
+            return new MetricsAPIInfo(name, url, token, upload, scheduler, syncInterval);
         }
     }
 }

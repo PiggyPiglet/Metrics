@@ -43,7 +43,7 @@ public final class MetricsManager extends MySQLManager<MetricSet> {
         metrics.put(metricSet.getId(), metricSet);
     }
 
-    public void add(String name, Map<String, Object> data) {
+    public void add(String name, Map<String, Integer> data) {
         add(new MetricSet(
                 UUID.nameUUIDFromBytes(FORMAT.format(LocalDateTime.now()).getBytes()),
                 name,

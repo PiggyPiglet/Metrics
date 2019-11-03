@@ -12,9 +12,9 @@ import java.util.UUID;
 public final class MetricSet implements SearchUtils.Searchable {
     private final UUID id;
     private final String name;
-    private final Map<String, Object> data;
+    private final Map<String, Integer> data;
 
-    public MetricSet(UUID id, String name, Map<String, Object> data) {
+    public MetricSet(UUID id, String name, Map<String, Integer> data) {
         this.id = id;
         this.name = name;
         this.data = data;
@@ -29,7 +29,7 @@ public final class MetricSet implements SearchUtils.Searchable {
         return name;
     }
 
-    public Map<String, Object> getData() {
+    public Map<String, Integer> getData() {
         return data;
     }
 }

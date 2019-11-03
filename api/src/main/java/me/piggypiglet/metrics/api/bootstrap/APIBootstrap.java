@@ -20,14 +20,16 @@ public final class APIBootstrap {
 
     public MetricsAPI start() {
         final ImmutableMetricsManager immutableMetricsManager = new ImmutableMetricsManager(config);
-        final MutableMetricsManager mutableMetricsManager = new MutableMetricsManager(config);
+        MutableMetricsManager mutableMetricsManager = null;
 
         if (!config.getToken().equals("null")) {
+            mutableMetricsManager = new MutableMetricsManager(config);
+
             final long ms = config.getSyncInterval();
             final UploadTask task = config.getUpload();
 
             task.populate(mutableMetricsManager);
-            config.getExecutor().scheduleAtFixedRate(task, ms, ms, TimeUnit.MILLISECONDS);
+            config.getScheduler().scheduleAtFixedRate(task, ms, ms, TimeUnit.MILLISECONDS);
         }
 
         return new MetricsAPI(config, immutableMetricsManager, mutableMetricsManager);

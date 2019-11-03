@@ -43,7 +43,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
             final Map<String, String> mapHeaders = headers.stream().collect(Collectors.toMap(Header::getKey, Header::getValue));
 
             if (mapHeaders.containsKey("data")) {
-                final Map<String, Object> data = GSON.fromJson(mapHeaders.get("data"), LinkedTreeMap.class);
+                final Map<String, Integer> data = GSON.fromJson(mapHeaders.get("data"), LinkedTreeMap.class);
 
                 if (!manager.exists(name)) {
                     if (canAdd) {
@@ -59,7 +59,16 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
                         return "Did you mean " + result.getName() + "?";
                     }
 
-                    result.getData().putAll(data);
+                    final Map<String, Integer> resultData = result.getData();
+
+                    data.forEach((s, i) -> {
+                        if (resultData.containsKey(s)) {
+                            resultData.put(s, resultData.get(s) + i);
+                        } else {
+                            resultData.put(s, i);
+                        }
+                    });
+
                     return true;
                 }
             }

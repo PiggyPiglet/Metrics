@@ -9,8 +9,11 @@ import me.piggypiglet.metrics.api.data.MutableMetricsManager;
 public abstract class UploadTask implements Runnable {
     private MutableMetricsManager mutableMetricsManager;
 
+    protected void populate() {}
+
     public final void populate(MutableMetricsManager manager) {
         mutableMetricsManager = manager;
+        populate();
     }
 
     protected abstract Object provideData();

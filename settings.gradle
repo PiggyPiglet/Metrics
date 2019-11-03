@@ -2,10 +2,5 @@ rootProject.name = 'metrics'
 
 include(
         "app",
-        "api",
-        ":util:bukkit",
-        ":util:sponge",
-        ":util:bungeecord",
-        ":util:velocity",
-        ":util:velocity"
+        "api"
 )
