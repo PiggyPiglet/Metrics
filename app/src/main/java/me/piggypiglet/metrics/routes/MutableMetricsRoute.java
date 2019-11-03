@@ -63,7 +63,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
                     Stream.of(
                             result.getLiveData(),
                             result.getPersistentData()
-                    ).forEach(m -> m.get(ip).putAll(data));
+                    ).forEach(m -> m.put(ip, data));
 
                     return true;
                 }
