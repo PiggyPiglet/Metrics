@@ -4,8 +4,8 @@ if [ $# -ne 1 ]; then
   exit 1
 fi
 
-gradlew.bat clean
-gradlew.bat jar
+./gradlew.bat clean
+./gradlew.bat jar
 
 rm -r maven/tmp/
 mkdir maven/tmp/
