@@ -86,7 +86,7 @@ public class ImmutableMetricsManager {
         return new MetricSet(
                 UUID.fromString(Objects.requireNonNull(json.getString("id"))),
                 json.getString("name"),
-                (Map<String, Object>) json.get("data")
+                (Map<String, Integer>) json.get("data")
         );
     }
 }
