@@ -25,7 +25,7 @@ public final class AddMetric extends Command {
             if (metricsManager.exists(args[0])) {
                 user.sendMessage("A metric already exists with the name %s", args[0]);
             } else {
-                metricsManager.add(args[0], new HashMap<>());
+                metricsManager.create(args[0], "127.0.0.1", new HashMap<>());
                 user.sendMessage("Created a metric by the name of %s", args[0]);
             }
 

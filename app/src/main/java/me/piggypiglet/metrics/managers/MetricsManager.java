@@ -5,6 +5,8 @@ import me.piggypiglet.framework.managers.objects.KeyTypeInfo;
 import me.piggypiglet.framework.mysql.manager.MySQLManager;
 import me.piggypiglet.metrics.objects.MetricSet;
 import me.piggypiglet.metrics.tables.MetricsTable;
+import net.jodah.expiringmap.ExpirationPolicy;
+import net.jodah.expiringmap.ExpiringMap;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2019
@@ -19,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // ------------------------------
 @Singleton
 public final class MetricsManager extends MySQLManager<MetricSet> {
-    private static final MetricSet DEF = new MetricSet(UUID.nameUUIDFromBytes("null".getBytes()), "null", new HashMap<>());
+    private static final MetricSet DEF = new MetricSet(UUID.nameUUIDFromBytes("null".getBytes()), "null", new HashMap<>(), new HashMap<>());
     private static final DateTimeFormatter FORMAT = DateTimeFormatter.ofPattern("ddMMyyyyHHmmssSS");
 
     private final Map<UUID, MetricSet> metrics = new ConcurrentHashMap<>();
@@ -43,11 +46,18 @@ public final class MetricsManager extends MySQLManager<MetricSet> {
         metrics.put(metricSet.getId(), metricSet);
     }
 
-    public void add(String name, Map<String, Integer> data) {
+    public void create(String name, String ip, Map<String, Object> data) {
+        final Map<String, Map<String, Object>> map = ExpiringMap.builder()
+                .expiration(11, TimeUnit.MINUTES)
+                .expirationPolicy(ExpirationPolicy.CREATED)
+                .build();
+        map.put(ip, data);
+
         add(new MetricSet(
                 UUID.nameUUIDFromBytes(FORMAT.format(LocalDateTime.now()).getBytes()),
                 name,
-                data
+                map,
+                new HashMap<>(map)
         ));
     }
 

@@ -37,7 +37,7 @@ public class ImmutableMetricsManager {
 
     public MetricSet get(String name) {
         try {
-            return serialise(new JsonParser(HTTPUtils.request(getUrl + name)));
+            return deserialise(new JsonParser(HTTPUtils.request(getUrl + name)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -48,7 +48,7 @@ public class ImmutableMetricsManager {
     public List<MetricSet> getAll() {
         try {
             return new JsonParser("{\"results\": " + HTTPUtils.request(getUrl + "all") + "}").getJsonList("results").stream()
-                    .map(this::serialise)
+                    .map(this::deserialise)
                     .collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,7 +59,7 @@ public class ImmutableMetricsManager {
 
     public MetricSet search(String query) {
         try {
-            return serialise(Objects.requireNonNull(new JsonParser("{\"results\": " + HTTPUtils.request(searchUrl + query) + "}").getJsonList("results")).get(0));
+            return deserialise(Objects.requireNonNull(new JsonParser("{\"results\": " + HTTPUtils.request(searchUrl + query) + "}").getJsonList("results")).get(0));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -82,11 +82,12 @@ public class ImmutableMetricsManager {
     }
 
     @SuppressWarnings("unchecked")
-    private MetricSet serialise(JsonParser json) {
+    private MetricSet deserialise(JsonParser json) {
         return new MetricSet(
                 UUID.fromString(Objects.requireNonNull(json.getString("id"))),
                 json.getString("name"),
-                (Map<String, Integer>) json.get("data")
+                (Map<String, Integer>) json.get("live_data"),
+                (Map<String, Integer>) json.get("persistent_data")
         );
     }
 }

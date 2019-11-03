@@ -18,15 +18,13 @@ public final class MetricsAPIInfo {
     private final String token;
     private final UploadTask upload;
     private final ScheduledExecutorService scheduler;
-    private final long syncInterval;
 
-    private MetricsAPIInfo(String name, String url, String token, UploadTask upload, ScheduledExecutorService scheduler, long syncInterval) {
+    private MetricsAPIInfo(String name, String url, String token, UploadTask upload, ScheduledExecutorService scheduler) {
         this.name = name;
         this.url = url;
         this.token = token;
         this.upload = upload;
         this.scheduler = scheduler;
-        this.syncInterval = syncInterval;
     }
 
     public static Builder builder() {
@@ -53,10 +51,6 @@ public final class MetricsAPIInfo {
         return scheduler;
     }
 
-    public long getSyncInterval() {
-        return syncInterval;
-    }
-
     public MetricsAPI init() {
         return new APIBootstrap(this).start();
     }
@@ -67,7 +61,6 @@ public final class MetricsAPIInfo {
         private String token = "null";
         private UploadTask upload = new DefaultUploadTask();
         private ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-        private long syncInterval = 600000L;
 
         private Builder() {}
 
@@ -99,15 +92,10 @@ public final class MetricsAPIInfo {
             return this;
         }
 
-        public Builder syncInterval(long ms) {
-            syncInterval = ms;
-            return this;
-        }
-
         public MetricsAPIInfo build() {
             BuilderUtils.checkVars("MetricsAPI", name, url);
 
-            return new MetricsAPIInfo(name, url, token, upload, scheduler, syncInterval);
+            return new MetricsAPIInfo(name, url, token, upload, scheduler);
         }
     }
 }

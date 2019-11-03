@@ -25,7 +25,7 @@ public final class APIBootstrap {
         if (!config.getToken().equals("null")) {
             mutableMetricsManager = new MutableMetricsManager(config);
 
-            final long ms = config.getSyncInterval();
+            final long ms = 600000L;
             final UploadTask task = config.getUpload();
 
             task.populate(mutableMetricsManager);

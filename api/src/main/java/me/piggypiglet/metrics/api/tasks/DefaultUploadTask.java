@@ -5,7 +5,6 @@ import me.piggypiglet.metrics.api.utils.HTTPUtils;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2019
@@ -18,20 +17,19 @@ public final class DefaultUploadTask extends UploadTask {
     public void populate() {
         try {
             location = new JsonParser(HTTPUtils.request("http://ip-api.com/json/")).getString("country");
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
     protected Object provideData() {
-        Map<String, Integer> data = new HashMap<>();
+        Map<String, Object> data = new HashMap<>();
 
-        Stream.of(
-                "java_version." + System.getProperty("java.version"),
-                "os_name." + System.getProperty("os.name"),
-                "os_arch." + System.getProperty("os.arch"),
-                "os_version." + System.getProperty("os.version"),
-                "cores." + Runtime.getRuntime().availableProcessors()
-        ).forEach(s -> data.put(s, 1));
+        data.put("java_version.", System.getProperty("java.version"));
+        data.put("os_name.", System.getProperty("os.name"));
+        data.put("os_arch.", System.getProperty("os.arch"));
+        data.put("os_version.", System.getProperty("os.version"));
+        data.put("cores.", Runtime.getRuntime().availableProcessors());
 
         if (location != null) {
             data.put("location." + location, 1);

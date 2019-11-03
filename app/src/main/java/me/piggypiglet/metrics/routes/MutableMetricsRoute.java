@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // ------------------------------
 // Copyright (c) PiggyPiglet 2019
@@ -30,7 +31,7 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
 
     @Inject
     public MutableMetricsRoute(MetricsManager manager, @Config FileConfiguration config) {
-        super("mutable-metrics", manager);
+        super("mutable-metrics", manager, MetricsRoute.GSON);
         this.manager = manager;
         canAdd = config.getBoolean("addition-via-route");
     }
@@ -43,11 +44,11 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
             final Map<String, String> mapHeaders = headers.stream().collect(Collectors.toMap(Header::getKey, Header::getValue));
 
             if (mapHeaders.containsKey("data")) {
-                final Map<String, Integer> data = GSON.fromJson(mapHeaders.get("data"), LinkedTreeMap.class);
+                final Map<String, Object> data = GSON.fromJson(mapHeaders.get("data"), LinkedTreeMap.class);
 
                 if (!manager.exists(name)) {
                     if (canAdd) {
-                        manager.add(mapHeaders.get("name"), data);
+                        manager.create(mapHeaders.get("name"), requestIp, data);
                         return true;
                     } else {
                         return "Addition via route is not enabled.";
@@ -59,15 +60,10 @@ public final class MutableMetricsRoute extends JsonManagerRoute<MetricSet> {
                         return "Did you mean " + result.getName() + "?";
                     }
 
-                    final Map<String, Integer> resultData = result.getData();
-
-                    data.forEach((s, i) -> {
-                        if (resultData.containsKey(s)) {
-                            resultData.put(s, resultData.get(s) + i);
-                        } else {
-                            resultData.put(s, i);
-                        }
-                    });
+                    Stream.of(
+                            result.getLiveData(),
+                            result.getPersistentData()
+                    ).forEach(m -> m.get(requestIp).putAll(data));
 
                     return true;
                 }

@@ -15,11 +15,12 @@ repositories {
 }
 
 dependencies {
-    compile 'me.piggypiglet:framework-core:1.4.15'
+    compile 'me.piggypiglet:framework-core:1.4.18'
     compile 'me.piggypiglet:framework-logback:1.4.13'
     compile 'me.piggypiglet:framework-console:1.4.13'
-    compile 'me.piggypiglet:framework-http:1.4.13'
+    compile 'me.piggypiglet:framework-http:1.4.18'
     compile 'me.piggypiglet:framework-mysql:1.4.15'
+    compile 'net.jodah:expiringmap:+'
 }
 
 shadowJar {
